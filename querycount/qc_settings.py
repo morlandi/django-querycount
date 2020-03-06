@@ -17,6 +17,8 @@ QC_SETTINGS = {
         'MIN_QUERY_COUNT_TO_LOG': 0
     },
     'DISPLAY_DUPLICATES': None,
+    'DISPLAY_DUPLICATES_PRETTIFIED': True,
+    'COLOR_FORMATTER_STYLE': 'monokai',
     'RESPONSE_HEADER': 'X-DjangoQueryCount-Count',
 }
 
@@ -26,7 +28,7 @@ def _process_settings(**kwargs):
     """
 
     # If we are in this method due to a signal, only reload for our settings
-    setting_name = kwargs.get('setting', None) 
+    setting_name = kwargs.get('setting', None)
     if setting_name is not None and setting_name != 'QUERYCOUNT':
         return
 

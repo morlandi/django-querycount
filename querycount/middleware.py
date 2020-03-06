@@ -149,6 +149,51 @@ class QueryCountMiddleware(MiddlewareMixin):
                 output += self._colorize(lines, count)
         return output
 
+    def _duplicate_queries(self, output):
+        """Appends the most common duplicate queries to the given output."""
+        if QC_SETTINGS['DISPLAY_DUPLICATES']:
+            for query, count in self.queries.most_common(QC_SETTINGS['DISPLAY_DUPLICATES']):
+                lines = '\nRepeated {0} times.'.format(count)
+                if QC_SETTINGS['DISPLAY_DUPLICATES_PRETTIFIED']:
+                    lines += "\n" + self._str_query(query) + "\n"
+                    output += self._colorize(lines, count)
+                else:
+                    lines += wrap(query)
+                    lines = "\n".join(lines) + "\n"
+        return output
+
+    def _str_query(self,sql):
+
+        # Borrowed by morlandi from sant527
+        # See: https://github.com/bradmontgomery/django-querycount/issues/22
+
+        # Check if Pygments is available for coloring
+        try:
+            import pygments
+            from pygments.lexers import SqlLexer
+            from pygments.formatters import TerminalTrueColorFormatter
+        except ImportError:
+            pygments = None
+        # Check if sqlparse is available for indentation
+        try:
+            import sqlparse
+        except ImportError:
+            sqlparse = None
+        # Remove leading and trailing whitespaces
+        if sqlparse:
+            # Indent the SQL query
+            sql = sqlparse.format(sql, reindent=True)
+        if pygments:
+            # Highlight the SQL query
+            sql = pygments.highlight(
+                sql,
+                SqlLexer(),
+                TerminalTrueColorFormatter(style=QC_SETTINGS['COLOR_FORMATTER_STYLE'])
+                #TerminalTrueColorFormatter()
+            )
+
+        return sql
+
     def _totals(self, which):
         reads = 0
         writes = 0
@@ -178,7 +223,7 @@ class QueryCountMiddleware(MiddlewareMixin):
             elapsed = self._end_time - self._start_time
         else:
             elapsed = 0
-        
+
         count = self._calculate_num_queries()
 
         sum_output = 'Total queries: {0} in {1:.4f}s \n\n'.format(count, elapsed)
