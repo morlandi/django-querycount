@@ -36,7 +36,7 @@ that will be ignored by the middleware.  The default settings are::
         },
         'IGNORE_REQUEST_PATTERNS': [],
         'IGNORE_SQL_PATTERNS': [],
-        'DISPLAY_DUPLICATES': None,
+        'DISPLAY_DUPLICATES': 0,
         'DISPLAY_DUPLICATES_PRETTIFIED': True,
         'COLOR_FORMATTER_STYLE': 'monokai',
         'RESPONSE_HEADER': 'X-DjangoQueryCount-Count'
