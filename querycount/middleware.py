@@ -139,15 +139,15 @@ class QueryCountMiddleware(MiddlewareMixin):
                 output += "|------|-----------|----------|----------|----------|------------|\n"
         return output
 
-    def _duplicate_queries(self, output):
-        """Appends the most common duplicate queries to the given output."""
-        if QC_SETTINGS['DISPLAY_DUPLICATES']:
-            for query, count in self.queries.most_common(QC_SETTINGS['DISPLAY_DUPLICATES']):
-                lines = ['\nRepeated {0} times.'.format(count)]
-                lines += wrap(query)
-                lines = "\n".join(lines) + "\n"
-                output += self._colorize(lines, count)
-        return output
+    # def _duplicate_queries(self, output):
+    #     """Appends the most common duplicate queries to the given output."""
+    #     if QC_SETTINGS['DISPLAY_DUPLICATES']:
+    #         for query, count in self.queries.most_common(QC_SETTINGS['DISPLAY_DUPLICATES']):
+    #             lines = ['\nRepeated {0} times.'.format(count)]
+    #             lines += wrap(query)
+    #             lines = "\n".join(lines) + "\n"
+    #             output += self._colorize(lines, count)
+    #     return output
 
     def _duplicate_queries(self, output):
         """Appends the most common duplicate queries to the given output."""
