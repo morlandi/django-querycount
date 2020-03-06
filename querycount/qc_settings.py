@@ -16,7 +16,7 @@ QC_SETTINGS = {
         'MIN_TIME_TO_LOG': 0,
         'MIN_QUERY_COUNT_TO_LOG': 0
     },
-    'DISPLAY_DUPLICATES': None,
+    'DISPLAY_DUPLICATES': 0,
     'DISPLAY_DUPLICATES_PRETTIFIED': True,
     'COLOR_FORMATTER_STYLE': 'monokai',
     'RESPONSE_HEADER': 'X-DjangoQueryCount-Count',

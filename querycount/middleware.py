@@ -114,13 +114,16 @@ class QueryCountMiddleware(MiddlewareMixin):
 
         return response
 
+    def _host_string(self):
+        if self.host:
+            host_string = 'http://{0}{1}'.format(self.host, self.request_path)
+        else:
+            host_string = self.request_path
+        return host_string
+
     def _stats_table(self, which, path='', output=None):
         if output is None:
-            if self.host:
-                host_string = 'http://{0}{1}'.format(self.host, self.request_path)
-            else:
-                host_string = self.request_path
-            output = self.white('\n{0}\n'.format(host_string))
+            output = self.white('\n> {0} (summary)\n'.format(self._host_string()))
             output += "|------|-----------|----------|----------|----------|------------|\n"
             output += "| Type | Database  |   Reads  |  Writes  |  Totals  | Duplicates |\n"
             output += "|------|-----------|----------|----------|----------|------------|\n"
@@ -151,15 +154,21 @@ class QueryCountMiddleware(MiddlewareMixin):
 
     def _duplicate_queries(self, output):
         """Appends the most common duplicate queries to the given output."""
-        if QC_SETTINGS['DISPLAY_DUPLICATES']:
-            for query, count in self.queries.most_common(QC_SETTINGS['DISPLAY_DUPLICATES']):
-                lines = '\nRepeated {0} times.'.format(count)
-                if QC_SETTINGS['DISPLAY_DUPLICATES_PRETTIFIED']:
-                    lines += "\n" + self._str_query(query) + "\n"
-                    output += self._colorize(lines, count)
-                else:
-                    lines += wrap(query)
-                    lines = "\n".join(lines) + "\n"
+
+        if QC_SETTINGS['DISPLAY_DUPLICATES'] is None:
+            queries = self.queries.items()
+        else:
+            queries = self.queries.most_common(QC_SETTINGS['DISPLAY_DUPLICATES'])
+
+        for query, count in queries:
+            lines = '\nRepeated {0} times.'.format(count)
+            if QC_SETTINGS['DISPLAY_DUPLICATES_PRETTIFIED']:
+                lines += "\n" + self._str_query(query) + "\n"
+                output += self._colorize(lines, count)
+            else:
+                lines += wrap(query)
+                lines = "\n".join(lines) + "\n"
+
         return output
 
     def _str_query(self,sql):
@@ -226,14 +235,16 @@ class QueryCountMiddleware(MiddlewareMixin):
 
         count = self._calculate_num_queries()
 
-        sum_output = 'Total queries: {0} in {1:.4f}s \n\n'.format(count, elapsed)
-        sum_output = self._colorize(sum_output, count)
+        output += self.white('Total queries: {0} in {1:.4f}s \n\n'.format(count, elapsed))
+        output = self._colorize(output, count)
+
+        sum_output = self.white('\n> {0} (sql log)\n'.format(self._host_string()))
         sum_output = self._duplicate_queries(sum_output)
 
         # runserver just prints its output to sys.stderr, so we'll do that too.
         if elapsed >= self.threshold['MIN_TIME_TO_LOG'] and count >= self.threshold['MIN_QUERY_COUNT_TO_LOG']:
-            sys.stderr.write(output)
             sys.stderr.write(sum_output)
+            sys.stderr.write(output)
 
     def _calculate_num_queries(self):
         """

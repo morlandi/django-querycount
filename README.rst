@@ -73,15 +73,18 @@ the supply ``None`` as the value::
         'RESPONSE_HEADER': None
     }
 
-**New in 0.4.0**. The ``QUERYCOUNT['DISPLAY_DUPLICATES']`` setting allows you
+The ``QUERYCOUNT['DISPLAY_DUPLICATES']`` setting allows you
 to control how the most common duplicate queries are displayed. If the setting
-is ``None`` (the default), duplicate queries are not displayed. Otherwise, this
+is ``0`` (the default), duplicate queries are not displayed. Otherwise, this
 should be an integer. For example, the following setting would always print the
 5 most duplicated queries::
 
     QUERYCOUNT = {
         'DISPLAY_DUPLICATES': 5,
     }
+
+``QUERYCOUNT['DISPLAY_DUPLICATES']=None`` means: log all queries.
+
 
 ``QUERYCOUNT['DISPLAY_DUPLICATES_PRETTIFIED']`` and ``QUERYCOUNT['COLOR_FORMATTER_STYLE']``
 define whether to use pygments and sqlparse, when available, for sql formatting.
