@@ -234,17 +234,18 @@ class QueryCountMiddleware(MiddlewareMixin):
             elapsed = 0
 
         count = self._calculate_num_queries()
+        if count > 0:
 
-        output += self.white('Total queries: {0} in {1:.4f}s \n\n'.format(count, elapsed))
-        output = self._colorize(output, count)
+            output += self.white('Total queries: {0} in {1:.4f}s \n\n'.format(count, elapsed))
+            output = self._colorize(output, count)
 
-        sum_output = self.white('\n> {0} (sql log)\n'.format(self._host_string()))
-        sum_output = self._duplicate_queries(sum_output)
+            sum_output = self.white('\n> {0} (sql log)\n'.format(self._host_string()))
+            sum_output = self._duplicate_queries(sum_output)
 
-        # runserver just prints its output to sys.stderr, so we'll do that too.
-        if elapsed >= self.threshold['MIN_TIME_TO_LOG'] and count >= self.threshold['MIN_QUERY_COUNT_TO_LOG']:
-            sys.stderr.write(sum_output)
-            sys.stderr.write(output)
+            # runserver just prints its output to sys.stderr, so we'll do that too.
+            if elapsed >= self.threshold['MIN_TIME_TO_LOG'] and count >= self.threshold['MIN_QUERY_COUNT_TO_LOG']:
+                sys.stderr.write(sum_output)
+                sys.stderr.write(output)
 
     def _calculate_num_queries(self):
         """
