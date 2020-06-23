@@ -160,6 +160,10 @@ class QueryCountMiddleware(MiddlewareMixin):
         else:
             queries = self.queries.most_common(QC_SETTINGS['DISPLAY_DUPLICATES'])
 
+        # Avoid “RuntimeError: dictionary changed size during iteration” error
+        # see: https://stackoverflow.com/questions/11941817/how-to-avoid-runtimeerror-dictionary-changed-size-during-iteration-error#11941855
+        queries = list(queries)
+
         for query, count in queries:
             lines = '\nRepeated {0} times.'.format(count)
             if QC_SETTINGS['DISPLAY_DUPLICATES_PRETTIFIED']:
