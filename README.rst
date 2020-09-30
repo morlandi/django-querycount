@@ -1,6 +1,9 @@
 Django Querycount
 =================
 
+Replaced by https://github.com/morlandi/django-query-inspector
+--------------------------------------------------------------
+
 |version| |license|
 
 Inspired by `this post by David Szotten <http://goo.gl/UUKN0r>`_, this project
